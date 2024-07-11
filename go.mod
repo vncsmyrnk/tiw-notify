@@ -3,6 +3,7 @@ module github.com/vncsmyrnk/tiwnotify
 go 1.22.5
 
 require (
+	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4 // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
