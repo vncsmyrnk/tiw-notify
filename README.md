@@ -2,8 +2,9 @@
 
 Notifier service for todayiwill.
 
-## Development with docker
+## 🔧 Development with docker
 
+```bash
 docker run --rm -it \
     -v "$(pwd)":/home/dev/app \
     -v ~/.ssh:/home/dev/.ssh \
@@ -17,3 +18,4 @@ docker run --rm -it \
     --cpus 2 \
     --workdir /home/dev/app \
     ghcr.io/vncsmyrnk/go-dev:latest bash
+```
