@@ -1,6 +1,6 @@
 # tiw-notify
 
-Notifier service for todayiwill
+Notifier service for todayiwill.
 
 ## Development with docker
 
@@ -16,4 +16,4 @@ docker run --rm -it \
     -u dev \
     --cpus 2 \
     --workdir /home/dev/app \
-    ghcr.io/vncsmyrnk/rust-dev:latest bash
+    ghcr.io/vncsmyrnk/go-dev:latest bash

@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/vncsmyrnk/tiwnotify/internal/notification"
 
 func main() {
-    fmt.Println("Hello, Go!")
+    notification.Notify()
 }
