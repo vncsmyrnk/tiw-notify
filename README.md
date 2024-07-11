@@ -1,4 +1,4 @@
-# tiw-notify
+# todayiwill notifier
 
 Notifier service for todayiwill.
 
