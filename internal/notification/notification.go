@@ -6,9 +6,7 @@ import (
 	"log"
 )
 
-func Notify() {
-	title := "Example notification"
-	message := "This is an example"
+func Notify(title, message string) {
 	iconPath := ""
 
 	err := beeep.Notify(title, message, iconPath)
