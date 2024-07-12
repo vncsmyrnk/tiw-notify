@@ -22,10 +22,10 @@ func (m *mockTimer) Stop() bool {
 }
 
 func NewMockTimer(d time.Duration) schedule.JobTimer {
-	return &mockTimer{CChan: make(chan time.Time, 1)}
+	return &mockTimer{CChan: make(chan time.Time)}
 }
 
-func TestAddJob_Schedule(t *testing.T) {
+func TestAddJob(t *testing.T) {
 	scheduler := &schedule.Schedule{}
 	timer := NewMockTimer(1 * time.Second)
 
@@ -37,10 +37,10 @@ func TestAddJob_Schedule(t *testing.T) {
 		},
 	}
 
+	scheduler.AddJob(job)
+
 	mockTimer := timer.(*mockTimer)
 	mockTimer.CChan <- time.Now()
-
-	scheduler.AddJob(job)
 
 	if !executed {
 		t.Errorf("expected task to be executed, but it was not")
