@@ -24,3 +24,6 @@ jobs:
           else
             echo "Go files are formatted correctly."
           fi
+
+      - name: Run tests
+        run: go test ./...
