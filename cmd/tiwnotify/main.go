@@ -7,6 +7,7 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/vncsmyrnk/tiwnotify/internal/appointment"
+	"github.com/vncsmyrnk/tiwnotify/internal/schedule"
 )
 
 func main() {
@@ -19,6 +20,8 @@ func main() {
 	// Start listening for events
 	go func() {
 		var appointments []appointment.Appointment
+		jobScheduler := schedule.Schedule{}
+
 		for {
 			select {
 			case event, ok := <-watcher.Events:
@@ -30,9 +33,7 @@ func main() {
 					log.Println("modified file:", event.Name)
 
 					// Stops all existent jobs
-					for _, a := range appointments {
-						a.StopJob()
-					}
+					jobScheduler.StopAllJobs()
 
 					appointments, err = appointment.ScheduleAppointmentNotificationsFromFile(event.Name)
 					if err != nil {

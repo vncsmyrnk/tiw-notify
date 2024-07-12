@@ -16,19 +16,20 @@ import (
 type Appointment struct {
 	Time        time.Time
 	Description string
-	timer       *time.Timer
 }
 
-func New(time time.Time, description string) (*Appointment, error) {
+func NewAppointment(time time.Time, description string, jobScheduler schedule.JobScheduler) (*Appointment, error) {
 	appointment := &Appointment{
 		Time:        time,
 		Description: description,
 	}
-	timer, err := schedule.AddJob(schedule.Job{Time: appointment.Time, Task: func() { appointment.Notify() }})
+
+	job, err := schedule.NewJobByTime(appointment.Time, func() { appointment.Notify() })
 	if err != nil {
 		return nil, err
 	}
-	appointment.timer = timer
+
+	jobScheduler.AddJob(*job)
 	return appointment, nil
 }
 
@@ -36,8 +37,14 @@ func (a Appointment) Notify() {
 	notification.Notify("Appointment reminder", a.Description)
 }
 
-func (a Appointment) StopJob() {
-	a.timer.Stop()
+func (a Appointment) ScheduleNotificationJob(jobScheduler schedule.JobScheduler) error {
+	job, err := schedule.NewJobByTime(a.Time, func() { a.Notify() })
+	if err != nil {
+		return nil
+	}
+
+	jobScheduler.AddJob(*job)
+	return nil
 }
 
 func ParseAppointmentFromString(str string) (Appointment, error) {
@@ -47,11 +54,7 @@ func ParseAppointmentFromString(str string) (Appointment, error) {
 	if err != nil {
 		return Appointment{}, err
 	}
-	appointment, err := New(time, parts[1])
-	if err != nil {
-		return Appointment{}, err
-	}
-	return *appointment, nil
+	return Appointment{Time: time, Description: parts[1]}, nil
 }
 
 func ScheduleAppointmentNotificationsFromFile(fileName string) ([]Appointment, error) {
