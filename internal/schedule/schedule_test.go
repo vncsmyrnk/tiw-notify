@@ -6,9 +6,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/stretchr/testify/assert"
 	"github.com/vncsmyrnk/tiwnotify/internal/schedule"
-	// "github.com/stretchr/testify/assert"
-	// "github.com/google/go-cmp/cmp"
+	"github.com/vncsmyrnk/tiwnotify/internal/utils"
 )
 
 type mockTimer struct {
@@ -49,8 +51,11 @@ func TestAddJob(t *testing.T) {
 	}
 }
 
-// func TestNewJobByTime_ShouldBeOk(t *testing.T) {
-// 	tm := schedule.NewTimer(time.Second)
-// 	job, _ := schedule.NewJobByTime(time.Now().Add(time.Second), func() {})
-// 	assert.True(t, cmp.Equal(schedule.Job{Timer: tm, Task: func() {}}, job))
-// }
+func TestNewJobByTime_ShouldBeOk(t *testing.T) {
+	expected := &schedule.Job{Timer: schedule.NewTimer(time.Second), Task: func() {}}
+	job, err := schedule.NewJobByTime(time.Now().Add(time.Second), func() {})
+	if err != nil {
+		t.Error("error when creating job:", err)
+	}
+	assert.True(t, cmp.Equal(*expected, *job, utils.IgnoreFuncFields(), cmpopts.IgnoreUnexported(schedule.TimeJobTimer{})))
+}
