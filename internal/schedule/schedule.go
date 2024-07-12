@@ -15,7 +15,7 @@ type JobScheduler interface {
 }
 
 type Job struct {
-	Task func()
+	Task  func()
 	Timer JobTimer
 }
 
