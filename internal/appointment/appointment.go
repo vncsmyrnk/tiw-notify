@@ -16,15 +16,24 @@ import (
 type Appointment struct {
 	Time        time.Time
 	Description string
-	timer       time.Timer
+	timer       *time.Timer
+}
+
+func New(time time.Time, description string) (*Appointment, error) {
+	appointment := &Appointment{
+		Time:        time,
+		Description: description,
+	}
+	timer, err := schedule.AddJob(schedule.Job{Time: appointment.Time, Task: func() { appointment.Notify() }})
+	if err != nil {
+		return nil, err
+	}
+	appointment.timer = timer
+	return appointment, nil
 }
 
 func (a Appointment) Notify() {
 	notification.Notify("Appointment reminder", a.Description)
-}
-
-func (a *Appointment) ScheduleNotification() {
-	a.timer = *schedule.AddJob(schedule.Job{Time: a.Time, Task: func() { a.Notify() }})
 }
 
 func (a Appointment) StopJob() {
@@ -38,13 +47,14 @@ func ParseAppointmentFromString(str string) (Appointment, error) {
 	if err != nil {
 		return Appointment{}, err
 	}
-	return Appointment{
-		Time:        time,
-		Description: parts[1],
-	}, nil
+	appointment, err := New(time, parts[1])
+	if err != nil {
+		return Appointment{}, err
+	}
+	return *appointment, nil
 }
 
-func ReadAppointmentsFromFile(fileName string) ([]Appointment, error) {
+func ScheduleAppointmentNotificationsFromFile(fileName string) ([]Appointment, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return []Appointment{}, err
@@ -61,4 +71,5 @@ func ReadAppointmentsFromFile(fileName string) ([]Appointment, error) {
 		appointments = append(appointments, a)
 	}
 	return appointments, nil
+
 }

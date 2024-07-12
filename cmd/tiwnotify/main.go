@@ -34,13 +34,9 @@ func main() {
 						a.StopJob()
 					}
 
-					appointments, err = appointment.ReadAppointmentsFromFile(event.Name)
+					appointments, err = appointment.ScheduleAppointmentNotificationsFromFile(event.Name)
 					if err != nil {
 						log.Println("An error occurred while reading appointments.", err)
-					}
-
-					for _, a := range appointments {
-						a.ScheduleNotification()
 					}
 
 					log.Println(len(appointments), "appointments read and scheduled")
