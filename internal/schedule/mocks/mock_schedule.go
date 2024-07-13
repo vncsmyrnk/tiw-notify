@@ -45,3 +45,15 @@ func (mr *MockJobSchedulerMockRecorder) AddJob(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddJob", reflect.TypeOf((*MockJobScheduler)(nil).AddJob), arg0)
 }
+
+// StopAllJobs mocks base method.
+func (m *MockJobScheduler) StopAllJobs() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "StopAllJobs")
+}
+
+// StopAllJobs indicates an expected call of StopAllJobs.
+func (mr *MockJobSchedulerMockRecorder) StopAllJobs() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StopAllJobs", reflect.TypeOf((*MockJobScheduler)(nil).StopAllJobs))
+}
