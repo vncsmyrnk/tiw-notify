@@ -34,7 +34,8 @@ func NewAppointment(time time.Time, description string, jobScheduler schedule.Jo
 }
 
 func (a Appointment) Notify() {
-	notification.Notify("Appointment reminder", a.Description)
+	notifier := notification.BeeepNotifier{}
+	notifier.Notify("Appointment reminder", a.Description)
 }
 
 func (a Appointment) ScheduleNotificationJob(jobScheduler schedule.JobScheduler) error {
