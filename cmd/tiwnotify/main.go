@@ -7,6 +7,7 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/vncsmyrnk/tiwnotify/internal/appointment"
+	"github.com/vncsmyrnk/tiwnotify/internal/notification"
 	"github.com/vncsmyrnk/tiwnotify/internal/schedule"
 )
 
@@ -19,7 +20,6 @@ func main() {
 
 	// Start listening for events
 	go func() {
-		var appointments []appointment.Appointment
 		jobScheduler := schedule.Schedule{}
 
 		for {
@@ -35,12 +35,11 @@ func main() {
 					// Stops all existent jobs
 					jobScheduler.StopAllJobs()
 
-					appointments, err = appointment.ScheduleAppointmentNotificationsFromFile(event.Name)
+					as := appointment.AppointmentSchedule{Scheduler: &jobScheduler, Notifier: notification.BeeepNotifier{}}
+					err = as.ScheduleFromFile(event.Name)
 					if err != nil {
 						log.Println("An error occurred while reading appointments.", err)
 					}
-
-					log.Println(len(appointments), "appointments read and scheduled")
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {

@@ -1,5 +1,7 @@
 // vim: noexpandtab
 
+//go:generate mockgen -source=appointment.go -destination=mocks/mock_appointment.go -package=mocks
+
 package appointment
 
 import (
@@ -18,37 +20,7 @@ type Appointment struct {
 	Description string
 }
 
-func NewAppointment(time time.Time, description string, jobScheduler schedule.JobScheduler) (*Appointment, error) {
-	appointment := &Appointment{
-		Time:        time,
-		Description: description,
-	}
-
-	job, err := schedule.NewJobByTime(appointment.Time, func() { appointment.Notify() })
-	if err != nil {
-		return nil, err
-	}
-
-	jobScheduler.AddJob(*job)
-	return appointment, nil
-}
-
-func (a Appointment) Notify() {
-	notifier := notification.BeeepNotifier{}
-	notifier.Notify("Appointment reminder", a.Description)
-}
-
-func (a Appointment) ScheduleNotificationJob(jobScheduler schedule.JobScheduler) error {
-	job, err := schedule.NewJobByTime(a.Time, func() { a.Notify() })
-	if err != nil {
-		return nil
-	}
-
-	jobScheduler.AddJob(*job)
-	return nil
-}
-
-func ParseAppointmentFromString(str string) (Appointment, error) {
+func NewAppointmentFromString(str string) (Appointment, error) {
 	parts := strings.SplitN(str, " ", 2)
 	now := time.Now()
 	time, err := time.Parse(time.RFC3339, fmt.Sprintf("%4d-%02d-%02dT%v:00Z", now.Year(), int(now.Month()), now.Day(), parts[0]))
@@ -58,22 +30,33 @@ func ParseAppointmentFromString(str string) (Appointment, error) {
 	return Appointment{Time: time, Description: parts[1]}, nil
 }
 
-func ScheduleAppointmentNotificationsFromFile(fileName string) ([]Appointment, error) {
+type AppointmentScheduler interface {
+	ScheduleFromFile(string) error
+}
+
+type AppointmentSchedule struct {
+	Scheduler schedule.JobScheduler
+	Notifier notification.Notifier
+}
+
+func (as AppointmentSchedule) ScheduleFromFile(fileName string) error {
 	file, err := os.Open(fileName)
 	if err != nil {
-		return []Appointment{}, err
+		return err
 	}
 
-	var appointments []Appointment
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		a, err := ParseAppointmentFromString(line)
+		a, err := NewAppointmentFromString(line)
 		if err != nil {
 			continue
 		}
-		appointments = append(appointments, a)
+		job, err := schedule.NewJobByTime(a.Time, func() { as.Notifier.Notify("Appointment reminder", a.Description) })
+		if err != nil {
+			continue
+		}
+		as.Scheduler.AddJob(*job)
 	}
-	return appointments, nil
-
+	return nil
 }
