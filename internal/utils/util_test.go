@@ -34,7 +34,7 @@ func TestHourMinuteStringToTime_ShouldBeOk(t *testing.T) {
 			  t.Error("error creating expected value for test", err)
 			}
 
-			assert.Equal(t, expected, *result)
+			assert.Equal(t, expected, result)
 		})
 	}
 }

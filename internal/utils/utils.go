@@ -16,11 +16,11 @@ func IgnoreFuncFields() cmp.Option {
 	}, cmp.Ignore())
 }
 
-func HourMinuteStringToTime(str string) (*time.Time, error) {
+func HourMinuteStringToTime(str string) (time.Time, error) {
 	now := time.Now()
 	t, err := time.Parse(time.RFC3339, fmt.Sprintf("%4d-%02d-%02dT%v:00Z", now.Year(), int(now.Month()), now.Day(), str))
 	if err != nil {
-		return nil, err
+		return time.Now(), err
 	}
-	return &t, nil
+	return t, nil
 }
