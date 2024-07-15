@@ -12,7 +12,7 @@ type Notifier interface {
 	Notify(string, string) error
 }
 
-type BeeepNotifier struct {}
+type BeeepNotifier struct{}
 
 func (bn BeeepNotifier) Notify(title, message string) error {
 	iconPath := ""

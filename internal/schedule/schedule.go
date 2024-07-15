@@ -6,6 +6,7 @@ package schedule
 
 import (
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -15,14 +16,23 @@ type JobScheduler interface {
 }
 
 type Job struct {
+	Name  string
 	Task  func()
 	Timer JobTimer
+}
+
+func (j Job) Matches(x any) bool {
+	return j.Name == x.(Job).Name
+}
+
+func (j Job) String() string {
+	return j.Name
 }
 
 func NewJobByTime(t time.Time, task func()) (*Job, error) {
 	if timeToJob := time.Until(t); timeToJob > 0 {
 		timer := NewTimer(timeToJob)
-		return &Job{Timer: timer, Task: task}, nil
+		return &Job{Name: fmt.Sprintf("Job to be done at %v", t), Timer: timer, Task: task}, nil
 	} else {
 		return nil, errors.New("Given time already passed.")
 	}

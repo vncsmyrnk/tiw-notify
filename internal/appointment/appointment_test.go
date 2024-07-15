@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"go.uber.org/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/vncsmyrnk/tiwnotify/internal/appointment"
 	notificationmocks "github.com/vncsmyrnk/tiwnotify/internal/notification/mocks"
-	// "github.com/vncsmyrnk/tiwnotify/internal/schedule"
+	"github.com/vncsmyrnk/tiwnotify/internal/schedule"
 	schedulemocks "github.com/vncsmyrnk/tiwnotify/internal/schedule/mocks"
-	// "github.com/vncsmyrnk/tiwnotify/internal/utils"
+	"github.com/vncsmyrnk/tiwnotify/internal/utils"
+	"go.uber.org/mock/gomock"
 )
 
 func TestNewAppointmentFromString_ShouldBeOk(t *testing.T) {
@@ -30,7 +30,7 @@ func TestNewAppointmentFromString_ShouldBeOk(t *testing.T) {
 
 func TestNewAppointmentFromString_ShouldFail(t *testing.T) {
 	testCases := []struct {
-		name string
+		name  string
 		input string
 	}{
 		{"Letter in time", "18:g8 Malformed appointment"},
@@ -66,19 +66,13 @@ func TestScheduleFromFile_ShouldBeOk(t *testing.T) {
 	mockJobScheduler := schedulemocks.NewMockJobScheduler(ctrl)
 	mockNotifier := notificationmocks.NewMockNotifier(ctrl)
 
-	// expectedTime, err := utils.HourMinuteStringToTime(timeStr)
-	// if err != nil {
-	// 	t.Error("failed to create expected time:", err)
-	// 	return
-	// }
+	expectedTime, err := utils.HourMinuteStringToTime(timeStr)
+	if err != nil {
+		t.Error("failed to create expected time:", err)
+		return
+	}
 
-	// expectedJob, err := schedule.NewJobByTime(expectedTime, func() {})
-	// if err != nil {
-	// 	t.Error("failed to create expected job:", err)
-	// 	return
-	// }
-
-	mockJobScheduler.EXPECT().AddJob(gomock.Any())
+	mockJobScheduler.EXPECT().AddJob(schedule.Job{Name: fmt.Sprintf("Job to be done at %v", expectedTime)})
 	as := appointment.AppointmentSchedule{Scheduler: mockJobScheduler, Notifier: mockNotifier}
 	err = as.ScheduleFromFile(f.Name())
 	if err != nil {

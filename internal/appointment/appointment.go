@@ -36,7 +36,7 @@ type AppointmentScheduler interface {
 
 type AppointmentSchedule struct {
 	Scheduler schedule.JobScheduler
-	Notifier notification.Notifier
+	Notifier  notification.Notifier
 }
 
 func (as AppointmentSchedule) ScheduleFromFile(fileName string) error {
