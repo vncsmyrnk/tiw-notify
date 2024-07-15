@@ -43,6 +43,7 @@ func TestNewAppointmentFromString_ShouldFail(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := appointment.NewAppointmentFromString(tc.input)
 			assert.True(t, err != nil)
+			assert.IsType(t, err, &time.ParseError{})
 		})
 	}
 }
